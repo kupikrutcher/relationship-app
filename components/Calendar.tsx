@@ -247,14 +247,22 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
       </div>
 
       {/* Dropdown for adding event */}
-      {dropdownAnchor && onAddEvent && (
+      {dropdownAnchor && onAddEvent && (() => {
+        const rect = dropdownAnchor.element.getBoundingClientRect();
+        const dropdownHeight = 280;
+        const dropdownWidth = 180;
+        const margin = 8;
+        const spaceBelow = typeof window !== 'undefined' ? window.innerHeight - rect.bottom : dropdownHeight;
+        const openAbove = typeof window !== 'undefined' && spaceBelow < dropdownHeight + margin;
+        const top = openAbove ? rect.top - dropdownHeight - margin : rect.bottom + margin;
+        const left = typeof window !== 'undefined'
+          ? Math.max(margin, Math.min(rect.left, window.innerWidth - dropdownWidth - margin))
+          : rect.left;
+        return (
         <div
           ref={dropdownRef}
-          className="fixed z-50 mt-1 py-1 bg-white rounded-lg shadow-xl border border-gray-200 min-w-[180px]"
-          style={{
-            top: dropdownAnchor.element.getBoundingClientRect().bottom + 4,
-            left: dropdownAnchor.element.getBoundingClientRect().left,
-          }}
+          className="fixed z-50 py-1 bg-white rounded-lg shadow-xl border border-gray-200 min-w-[180px]"
+          style={{ top, left }}
         >
           <div className="px-3 py-2 text-xs text-gray-500 border-b border-gray-100">
             {format(dropdownAnchor.day, 'd MMMM yyyy', { locale: ru })}
@@ -274,7 +282,8 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
             </button>
           ))}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
