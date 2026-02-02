@@ -275,26 +275,6 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
           ))}
         </div>
       )}
-
-      {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-4 text-sm text-black">
-        <div className="flex items-center gap-2">
-          <Gift size={16} className="text-pink-500" />
-          <span>Подарок</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Heart size={16} className="text-red-500" />
-          <span>Свидание</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <AlertTriangle size={16} className="text-orange-500" />
-          <span>Ссора</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <CalendarIcon size={16} className="text-blue-500" />
-          <span>Событие</span>
-        </div>
-      </div>
     </div>
   );
 }
