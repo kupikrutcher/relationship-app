@@ -58,17 +58,12 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
       }
       return days;
     }
+    // Месяц: показываем полную сетку — дни прошлого месяца, текущий месяц, дни следующего месяца (без пустых клеток)
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
-    return eachDayOfInterval({ start: monthStart, end: monthEnd });
-  };
-
-  const getEmptyCellsCount = () => {
-    if (viewMode === 'month') {
-      const monthStart = startOfMonth(currentDate);
-      return (monthStart.getDay() + 6) % 7;
-    }
-    return 0;
+    const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+    return eachDayOfInterval({ start: gridStart, end: gridEnd });
   };
 
   const navigate = (direction: 1 | -1) => {
@@ -135,8 +130,18 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
   }, []);
 
   const days = getDaysToShow();
-  const emptyCells = getEmptyCellsCount();
-  const gridCols = viewMode === 'month' ? 7 : viewMode === '2weeks' ? 7 : 7;
+  const gridCols = 7;
+
+  const getDayLabel = (day: Date) => {
+    if (viewMode !== 'month') return format(day, 'd');
+    const monthStart = startOfMonth(currentDate);
+    const isCurrentMonth = isSameMonth(day, currentDate);
+    const isFirstDayOfMonth = isSameDay(day, monthStart);
+    if (isCurrentMonth && isFirstDayOfMonth) {
+      return `${format(day, 'd')} ${format(day, 'MMM', { locale: ru })}`;
+    }
+    return format(day, 'd');
+  };
 
   return (
     <div className="w-full">
@@ -188,12 +193,6 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
 
       {/* Calendar Grid */}
       <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}>
-        {/* Empty cells for month view */}
-        {viewMode === 'month' &&
-          Array.from({ length: emptyCells }).map((_, i) => (
-            <div key={`empty-${i}`} className="aspect-square min-h-[80px]" />
-          ))}
-
         {/* Days */}
         {days.map((day) => {
           const dayEvents = getEventsForDay(day);
@@ -214,7 +213,7 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className={`text-sm font-semibold ${isToday ? 'text-pink-600' : 'text-gray-700'}`}>
-                  {format(day, 'd')}
+                  {getDayLabel(day)}
                 </span>
                 {onAddEvent && (
                   <Plus size={14} className="text-gray-400 opacity-0 group-hover:opacity-100 hover:opacity-100" />
