@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '@/store/useStore';
 import type { CalendarEvent, Mood } from '@/types';
-import { X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 
 interface EventFormProps {
   onClose: () => void;
@@ -11,7 +11,7 @@ interface EventFormProps {
 }
 
 export default function EventForm({ onClose, event }: EventFormProps) {
-  const { addEvent, updateEvent } = useStore();
+  const { addEvent, updateEvent, deleteEvent } = useStore();
   const [formData, setFormData] = useState({
     type: event?.type || ('gift' as CalendarEvent['type']),
     title: event?.title || '',
@@ -234,12 +234,29 @@ export default function EventForm({ onClose, event }: EventFormProps) {
         </div>
 
         {/* Submit */}
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-lg hover:shadow-lg transition-all font-medium"
-        >
-          {event ? 'Сохранить изменения' : 'Добавить событие'}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-lg hover:shadow-lg transition-all font-medium"
+          >
+            {event ? 'Сохранить изменения' : 'Добавить событие'}
+          </button>
+          {event && (
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm('Удалить это событие?')) {
+                  deleteEvent(event.id);
+                  onClose();
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <Trash2 size={18} />
+              Удалить событие
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );
