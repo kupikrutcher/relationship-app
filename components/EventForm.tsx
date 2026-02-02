@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '@/store/useStore';
 import type { CalendarEvent, Mood } from '@/types';
 import { X, Trash2 } from 'lucide-react';
@@ -8,15 +8,17 @@ import { X, Trash2 } from 'lucide-react';
 interface EventFormProps {
   onClose: () => void;
   event?: CalendarEvent;
+  initialDate?: string;
+  initialType?: CalendarEvent['type'];
 }
 
-export default function EventForm({ onClose, event }: EventFormProps) {
+export default function EventForm({ onClose, event, initialDate, initialType }: EventFormProps) {
   const { addEvent, updateEvent, deleteEvent } = useStore();
   const [formData, setFormData] = useState({
-    type: event?.type || ('gift' as CalendarEvent['type']),
+    type: event?.type || initialType || ('gift' as CalendarEvent['type']),
     title: event?.title || '',
     description: event?.description || '',
-    date: event?.date ? event.date.split('T')[0] : new Date().toISOString().split('T')[0],
+    date: event?.date ? event.date.split('T')[0] : (initialDate ? initialDate.split('T')[0] : new Date().toISOString().split('T')[0]),
     mood: event?.mood || ('neutral' as Mood),
     cost: event?.ratings?.cost || 5,
     romanticism: event?.ratings?.romanticism || 5,
@@ -25,6 +27,30 @@ export default function EventForm({ onClose, event }: EventFormProps) {
     fightReason: event?.fightDetails?.reason || '',
     fightNotes: event?.fightDetails?.notes || '',
   });
+
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        type: event.type,
+        title: event.title,
+        description: event.description || '',
+        date: event.date.split('T')[0],
+        mood: event.mood || 'neutral',
+        cost: event.ratings?.cost || 5,
+        romanticism: event.ratings?.romanticism || 5,
+        scale: event.ratings?.scale || 5,
+        completed: event.completed,
+        fightReason: event.fightDetails?.reason || '',
+        fightNotes: event.fightDetails?.notes || '',
+      });
+    } else if (initialDate || initialType) {
+      setFormData((prev) => ({
+        ...prev,
+        type: initialType || prev.type,
+        date: initialDate ? initialDate.split('T')[0] : prev.date,
+      }));
+    }
+  }, [event, initialDate, initialType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

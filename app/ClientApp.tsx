@@ -21,6 +21,7 @@ export default function ClientApp() {
   const [activeTab, setActiveTab] = useState<Tab>('calendar');
   const [showEventForm, setShowEventForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [newEventData, setNewEventData] = useState<{ date: string; type: CalendarEvent['type'] } | null>(null);
 
   useEffect(() => {
     const store = useStore as unknown as { persist?: { rehydrate: () => void } };
@@ -73,21 +74,16 @@ export default function ClientApp() {
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           {activeTab === 'calendar' && (
             <div>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Календарь событий</h2>
-                <button
-                  onClick={() => {
-                    setSelectedEvent(null);
-                    setShowEventForm(true);
-                  }}
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all"
-                >
-                  + Добавить событие
-                </button>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Календарь событий</h2>
               <Calendar
                 onEventClick={(event) => {
                   setSelectedEvent(event);
+                  setNewEventData(null);
+                  setShowEventForm(true);
+                }}
+                onAddEvent={(date, type) => {
+                  setSelectedEvent(null);
+                  setNewEventData({ date, type });
                   setShowEventForm(true);
                 }}
               />
@@ -132,6 +128,7 @@ export default function ClientApp() {
           onClick={() => {
             setShowEventForm(false);
             setSelectedEvent(null);
+            setNewEventData(null);
           }}
         >
           <div
@@ -140,9 +137,12 @@ export default function ClientApp() {
           >
             <EventForm
               event={selectedEvent ?? undefined}
+              initialDate={newEventData?.date}
+              initialType={newEventData?.type}
               onClose={() => {
                 setShowEventForm(false);
                 setSelectedEvent(null);
+                setNewEventData(null);
               }}
             />
           </div>
