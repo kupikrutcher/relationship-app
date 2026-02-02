@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const DATA_FILE = path.join(process.cwd(), 'data.json');
+// Railway: добавьте Volume с mount path /data — RAILWAY_VOLUME_MOUNT_PATH установится автоматически
+// Локально: data.json в корне проекта
+const DATA_FILE =
+  process.env.DATA_FILE_PATH ||
+  (process.env.RAILWAY_VOLUME_MOUNT_PATH
+    ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'data.json')
+    : path.join(process.cwd(), 'data.json'));
 
 const defaultState = {
   events: [],
@@ -53,6 +59,8 @@ export async function POST(request: Request) {
         significanceFormula: state.settings?.significanceFormula ?? defaultState.settings.significanceFormula,
       },
     });
+    const dir = path.dirname(DATA_FILE);
+    await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
     return NextResponse.json({ ok: true });
   } catch (err) {

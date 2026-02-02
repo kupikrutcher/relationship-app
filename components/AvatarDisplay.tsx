@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls as OrbitControlsImpl } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useStore } from '@/store/useStore';
@@ -32,8 +32,10 @@ function Avatar3D() {
 
 export default function AvatarDisplay() {
   const { settings, updateSettings } = useStore();
-  const [imagePreview, setImagePreview] = useState<string | null>(settings.avatarPhoto || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Используем settings.avatarPhoto напрямую — после rehydration из API он будет содержать сохранённое фото
+  const avatarPhoto = settings.avatarPhoto || null;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,7 +43,6 @@ export default function AvatarDisplay() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setImagePreview(result);
         updateSettings({ avatarPhoto: result });
       };
       reader.readAsDataURL(file);
@@ -60,10 +61,10 @@ export default function AvatarDisplay() {
               <Controls />
             </Canvas>
           </div>
-        ) : imagePreview ? (
+        ) : avatarPhoto ? (
           <div className="relative w-64 h-64 rounded-full overflow-hidden shadow-2xl border-4 border-white">
             <img
-              src={imagePreview}
+              src={avatarPhoto}
               alt="Partner"
               className="w-full h-full object-cover"
             />
