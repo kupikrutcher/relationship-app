@@ -265,7 +265,11 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
               onClick={() => handleTypeSelect(value)}
               className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-pink-50 transition-colors"
             >
-              <Icon size={18} className={value === 'gift' ? 'text-pink-500' : value === 'date' ? 'text-red-500' : value === 'fight' ? 'text-orange-500' : 'text-blue-500'} />
+              {value === 'activity' ? (
+                <img src="/images/activity-icon.png" alt="" className="w-[18px] h-[18px] object-contain" />
+              ) : (
+                <Icon size={18} className={value === 'gift' ? 'text-pink-500' : value === 'date' ? 'text-red-500' : value === 'fight' ? 'text-orange-500' : 'text-blue-500'} />
+              )}
               {label}
             </button>
           ))}
