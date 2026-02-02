@@ -140,38 +140,41 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
 
   return (
     <div className="w-full">
-      {/* View mode selector + Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          {(['week', '2weeks', 'month'] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === mode
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {mode === 'week' ? 'Неделя' : mode === '2weeks' ? '2 недели' : 'Месяц'}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
+      {/* View mode selector */}
+      <div className="flex items-center gap-2 mb-4 flex-shrink-0">
+        {(['week', '2weeks', 'month'] as const).map((mode) => (
           <button
-            onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            key={mode}
+            type="button"
+            onClick={() => setViewMode(mode)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              viewMode === mode
+                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+            }`}
           >
-            <ChevronLeft size={24} />
+            {mode === 'week' ? 'Неделя' : mode === '2weeks' ? '2 недели' : 'Месяц'}
           </button>
-          <h3 className="text-lg font-bold text-gray-800 min-w-[200px] text-center">{getTitle()}</h3>
-          <button
-            onClick={() => navigate(1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
+        ))}
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-center gap-2 mb-6">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h3 className="text-lg font-bold text-gray-800 min-w-[200px] text-center">{getTitle()}</h3>
+        <button
+          type="button"
+          onClick={() => navigate(1)}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ChevronRight size={24} />
+        </button>
       </div>
 
       {/* Weekday Headers */}
