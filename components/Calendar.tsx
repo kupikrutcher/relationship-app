@@ -249,14 +249,14 @@ export default function Calendar({ onEventClick, onAddEvent }: CalendarProps) {
       {/* Dropdown for adding event */}
       {dropdownAnchor && onAddEvent && (() => {
         const rect = dropdownAnchor.element.getBoundingClientRect();
-        const dropdownHeight = 280;
+        const dropdownHeight = 220; // минимальная высота меню (реальная ~200px)
         const dropdownWidth = 180;
-        const margin = 8;
+        const cellGap = 8; // gap-2 — как между ячейками календаря
         const spaceBelow = typeof window !== 'undefined' ? window.innerHeight - rect.bottom : dropdownHeight;
-        const openAbove = typeof window !== 'undefined' && spaceBelow < dropdownHeight + margin;
-        const top = openAbove ? rect.top - dropdownHeight - margin : rect.bottom + margin;
+        const openAbove = typeof window !== 'undefined' && spaceBelow < dropdownHeight + cellGap;
+        const top = openAbove ? rect.top - dropdownHeight - cellGap : rect.bottom + cellGap;
         const left = typeof window !== 'undefined'
-          ? Math.max(margin, Math.min(rect.left, window.innerWidth - dropdownWidth - margin))
+          ? Math.max(cellGap, Math.min(rect.left, window.innerWidth - dropdownWidth - cellGap))
           : rect.left;
         return (
         <div
